@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="css/login.css" type="text/css" rel="stylesheet"/>
+		<link href="images/favicon.png" type="image/png" rel="icon"/>
+		<title>CMP Premium Plus - Login</title>
+	</head>
+	<body>
+		<div class="login-area">
+			<div class="login-container">
+				<img src="images/cmppp.png" style="width: 100%;"/>
+				<p id="info-bar">This is a private members area. Please click on your image and provide the password</p>
+				<form id="form1">
+					<center>
+						<label>
+							<input type="radio" id="username" name="username" value="Maria" />
+							<div style="background: url('images/maria.jpg');"></div>
+						</label>
+						<label>
+							<input type="radio" id="username" name="username" value="Alex" />
+							<div style="background: url('images/me.jpg');"></div>
+						</label>
+						<label>
+							<input type="radio" id="username" name="username" value="Sam" />
+							<div style="background: url('images/sam.jpg');"></div>
+						</label>
+						<label>
+							<input type="radio" id="username" name="username" value="Maddie" />
+							<div style="background: url('images/maddie.jpg');"></div>
+						</label>
+						<label>
+							<input type="radio" id="username" name="username" value="Tom" />
+							<div style="background: url('images/tom.jpg');"></div>
+						</label>
+						<label>
+							<input type="radio" id="username" name="username" value="Olivia" />
+							<div style="background: url('images/olivia.jpg');"></div>
+						</label>
+						<label>
+							<input type="radio" id="username" name="username" value="Harry T" />
+							<div style="background: url('images/harryt.jpg');"></div>
+						</label>
+						<label>
+							<input type="radio" id="username" name="username" value="Brett" />
+							<div style="background: url('images/brett.jpg');"></div>
+						</label>
+						<label>
+							<input type="radio" id="username" name="username" value="Harry W" />
+							<div style="background: url('images/harryw.jpg');"></div>
+						</label>
+					</center>
+					<input type="password" id="password" name="password" placeholder="Password" onkeydown="checkKey(event)" required/>
+					<button class="submit" onClick="onSubmit()" style="display: none;">LOGIN &raquo;</button>
+				</form>
+			</div>
+		</div>
+		
+		<div class="copyright-text">
+			&copy; 2018 Norves. This website is owned and operated by <a href="https://norv.es">Norves UK</a>. Image by nicola j. patron under CC BY-SA 3.0 licence
+		</div>
+	</body>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+	<script>
+		$(document).on('submit','#form1',function (e) {
+			//prevent the form from doing a submit
+			e.preventDefault();
+			return false;
+		})
+		
+		function checkKey(e){
+			if(event.which == 13 || e.keyCode == 13)
+			{
+				onSubmit();
+			}
+		}
+		
+	
+		function onSubmit() {
+			var user = $('#username:checked').val();
+			var pass = $('#password').val();
+			var http = new XMLHttpRequest();
+			var url = "login.php";
+			var params = "user=" + user + "&pass=" + pass;
+			http.open("POST", url, true);
+			http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			http.onreadystatechange = setTimeout(function() {
+				if (http.readyState == 4 && http.status == 200) {
+					var response = http.responseText;
+					if(response == "0"){
+						$('#info-bar').text("Your passsword is incorrect.");
+						setTimeout(function(){ $('#password').val(""); }, 3000);
+					}else{
+						$('#info-bar').text("Verified. Logging you in.");
+						setCookie('token', response, 365.24);
+						setTimeout(function(){ window.location.href = "index.php"; }, 3000);						
+					}
+				}else if (http.readyState == 4 && http.status != 200) {
+					$('#info-bar').text("Something went wrong.");
+					setTimeout(function(){ $('#password').val(""); }, 3000);
+				}
+			},1000);
+			http.send(params);
+		}
+		
+		function setCookie(cname, cvalue, exdays) {
+			var d = new Date();
+			d.setTime(d.getTime() + (exdays*24*60*60*1000));
+			var expires = "expires="+ d.toUTCString();
+			document.cookie = cname + "=" + cvalue + ";" + expires; //+ ";secure";
+		}
+	</script>
+</html>
